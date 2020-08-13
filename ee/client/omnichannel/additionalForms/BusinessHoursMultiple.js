@@ -1,21 +1,39 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Field, TextInput, ToggleSwitch, MultiSelectFiltered, Box, Skeleton } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useTranslation } from '../../../../client/contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../../../client/hooks/useEndpointDataExperimental';
 import { useForm } from '../../../../client/hooks/useForm';
 
-const BusinessHoursMultipleContainer = ({ onChange, initialData }) => {
+const getInitialData = (data = {}) => ({
+	enabled: data.active ?? true,
+	name: data.name ?? '',
+	departments: data.departments ?? [],
+});
+
+const BusinessHoursMultipleContainer = ({ onChange, data: initialData }) => {
+	const saveData = useRef({});
+
 	const { data, state } = useEndpointDataExperimental('livechat/department');
 
-	const { values, handlers, hasUnsavedChanges } = useForm(initialData);
+	const onChangeValue = useMutableCallback(({ initialValue, value, key }) => {
+		const { current } = saveData;
+		if (JSON.stringify(initialValue) !== JSON.stringify(value)) {
+			current[key] = value;
+		} else {
+			delete current[key];
+		}
+	}, []);
+
+	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(initialData), onChangeValue);
 
 	useEffect(() => {
 		onChange({
-			data: values,
+			data: saveData.current,
 			hasUnsavedChanges,
 		});
-	}, [hasUnsavedChanges, onChange, values]);
+	}, [hasUnsavedChanges, onChange]);
 
 	const departmentList = useMemo(() => data && data.departments?.map(({ _id, name }) => [_id, name]), [data]);
 

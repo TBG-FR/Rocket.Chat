@@ -24,3 +24,8 @@ registerOmnichannelRoute('/appearance', {
 	name: 'omnichannel-appearance',
 	lazyRouteComponent: () => import('./appearance/AppearancePage'),
 });
+
+registerOmnichannelRoute('/businessHours2/:context?/:id?', {
+	name: 'omnichannel-businessHours',
+	lazyRouteComponent: () => import('./businessHours/BusinessHoursRouter'),
+});
