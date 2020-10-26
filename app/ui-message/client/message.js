@@ -43,12 +43,12 @@ const renderBody = (msg, settings) => {
 	}
 
 	if (searchedText) {
-		const uuidv4 = require('uuid/v4');		
+		const uuidv4 = require('uuid/v4');
 		const pattern = uuidv4();
 
-		msg.replace(new RegExp(`(?:href|title)="[^"]*(${searchedText})[^"]*"`, 'gi'), (str) => `${ str.replace(searchedText, pattern) }`)
-		   .replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`)
-		   .replace(new RegExp(pattern, 'gi'), (str) => searchedText);
+		msg.replace(new RegExp(`(?:href|title)="[^"]*(${ searchedText })[^"]*"`, 'gi'), (str) => `${ str.replace(searchedText, pattern) }`)
+			.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`)
+			.replace(new RegExp(pattern, 'gi'), () => searchedText);
 	}
 
 	return msg;
