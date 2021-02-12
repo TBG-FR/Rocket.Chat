@@ -49,7 +49,7 @@ const renderBody = (msg, settings) => {
 	if (searchedText) {
 		const uuidv4 = require('uuid/v4');
 		const replacementText = uuidv4();
-		const safeTextRegex = new RegExp(`(?:href|title)="[^"]*(${ searchedText })[^"]*"`, 'gi');
+		const safeTextRegex = new RegExp(`(?:href|title|data-username)="[^"]*(${ searchedText })[^"]*"`, 'gi');
 
 		while (msg.match(safeTextRegex) !== null) {
 			msg = msg.replace(safeTextRegex, (str) => `${ str.replace(searchedText, replacementText) }`);
