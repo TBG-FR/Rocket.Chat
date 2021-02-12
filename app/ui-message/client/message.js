@@ -48,11 +48,16 @@ const renderBody = (msg, settings) => {
 
 	if (searchedText) {
 		const uuidv4 = require('uuid/v4');
-		const pattern = uuidv4();
+		const replacementText = uuidv4();
+		const safeTextRegex = new RegExp(`(?:href|title)="[^"]*(${ searchedText })[^"]*"`, 'gi');
 
-		msg.replace(new RegExp(`(?:href|title)="[^"]*(${ searchedText })[^"]*"`, 'gi'), (str) => `${ str.replace(searchedText, pattern) }`)
+		while (msg.match(safeTextRegex) !== null) {
+			msg = msg.replace(safeTextRegex, (str) => `${ str.replace(searchedText, replacementText) }`);
+		}
+
+		msg = msg
 			.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`)
-			.replace(new RegExp(pattern, 'gi'), () => searchedText);
+			.replace(new RegExp(replacementText, 'gi'), () => searchedText);
 	}
 
 	return msg;
